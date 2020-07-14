@@ -1,14 +1,37 @@
-<DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible">
-	<title>Hammer's Website</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" type="text/css" media="screen" href="main.css">
-	<script src="main.js"></script>
-</head>
-<body>
-	Something cool right
-</body>
-</html>
+<textarea id="text" rows=17 cols=36 maxlength=113241>
+</textarea>
+<div>
+    <audio id="audio" controls="">
+        <source id="source" type="audio/wav">
+    </audio>
+<div>
+<div>
+    <button type="submit" id="button">Start Text to Speech</button>
+</div>
+<span id="charlen">0</span>
+
+<script>
+
+document.getElementById("text").oninput = function() {
+    document.getElementById("charlen").innerHTML = document.getElementById("text").value.length;
+};
+
+document.getElementById("button").onclick = async function() {
+    let text = document.getElementById("text").value;
+    let speak = await fetch("https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=" + encodeURIComponent(text.trim()));
+
+    if (speak.status != 200) {
+        alert(await speak.text());
+        return;
+    }
+
+    let mp3 = await speak.blob();
+
+    let blobUrl = URL.createObjectURL(mp3);
+    document.getElementById("source").setAttribute("src", blobUrl);
+    let audio = document.getElementById("audio");
+    audio.pause();
+    audio.load();
+    audio.play();
+};
+</script>
